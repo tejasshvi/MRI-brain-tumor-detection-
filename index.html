@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Detection Pipeline</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+</head>
+<body>
+    <header>
+        <h1>Brain Tumor Detection Pipeline</h1>
+        <p>Interactive Deep Learning Workflow Visualization</p>
+    </header>
+
+    <main class="container">
+        <!-- 1. Dataset Loading -->
+        <section class="step-card" id="step-1">
+            <h2>1. Dataset Loading (Test & Training Data)</h2>
+            <p>The dataset is split into Training and Testing sets. Click on any class to view sample MRI images.</p>
+            
+            <h3 class="dataset-subheader">Test Data</h3>
+            <div class="dataset-grid" id="test-grid">
+                <div class="dataset-item" data-class="pituitary" data-type="test">
+                    <img id="test-thumb-pituitary" src="" alt="Pituitary Tumor">
+                    <div class="item-info">
+                        <span>Pituitary Tumor</span>
+                        <span class="image-count" id="test-count-pituitary">Loading...</span>
+                    </div>
+                </div>
+                <div class="dataset-item" data-class="notumor" data-type="test">
+                    <img id="test-thumb-notumor" src="" alt="No Tumor">
+                    <div class="item-info">
+                        <span>No Tumor</span>
+                        <span class="image-count" id="test-count-notumor">Loading...</span>
+                    </div>
+                </div>
+                <div class="dataset-item" data-class="meningioma" data-type="test">
+                    <img id="test-thumb-meningioma" src="" alt="Meningioma Tumor">
+                    <div class="item-info">
+                        <span>Meningioma Tumor</span>
+                        <span class="image-count" id="test-count-meningioma">Loading...</span>
+                    </div>
+                </div>
+                <div class="dataset-item" data-class="glioma" data-type="test">
+                    <img id="test-thumb-glioma" src="" alt="Glioma Tumor">
+                    <div class="item-info">
+                        <span>Glioma Tumor</span>
+                        <span class="image-count" id="test-count-glioma">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="dataset-subheader" style="margin-top: 2rem;">Training Data</h3>
+            <div class="dataset-grid" id="train-grid">
+                <div class="dataset-item" data-class="pituitary" data-type="train">
+                    <img id="train-thumb-pituitary" src="" alt="Pituitary Tumor">
+                    <div class="item-info">
+                        <span>Pituitary Tumor</span>
+                        <span class="image-count" id="train-count-pituitary">Loading...</span>
+                    </div>
+                </div>
+                <div class="dataset-item" data-class="notumor" data-type="train">
+                    <img id="train-thumb-notumor" src="" alt="No Tumor">
+                    <div class="item-info">
+                        <span>No Tumor</span>
+                        <span class="image-count" id="train-count-notumor">Loading...</span>
+                    </div>
+                </div>
+                <div class="dataset-item" data-class="meningioma" data-type="train">
+                    <img id="train-thumb-meningioma" src="" alt="Meningioma Tumor">
+                    <div class="item-info">
+                        <span>Meningioma Tumor</span>
+                        <span class="image-count" id="train-count-meningioma">Loading...</span>
+                    </div>
+                </div>
+                <div class="dataset-item" data-class="glioma" data-type="train">
+                    <img id="train-thumb-glioma" src="" alt="Glioma Tumor">
+                    <div class="item-info">
+                        <span>Glioma Tumor</span>
+                        <span class="image-count" id="train-count-glioma">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="gallery-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h3 id="gallery-title">Gallery</h3>
+                    <div class="gallery-grid" id="gallery-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Image Visualization -->
+        <section class="step-card" id="step-2">
+            <h2>2. Image Visualization</h2>
+            <p>Random MRI brain tumor samples from the dataset. Click the button to load a new set of images.</p>
+            <button id="btn-refresh-viz" style="margin-bottom: 1.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                Refresh Random Samples
+            </button>
+            <div class="viz-grid" id="viz-grid-container">
+                <!-- Images injected via JS -->
+            </div>
+        </section>
+
+        <!-- 3. Image Preprocessing -->
+        <section class="step-card" id="step-3">
+            <h2>3. Interactive Image Preprocessing</h2>
+            <p>Select an MRI image from any class below and apply preprocessing operations.</p>
+            
+            <div class="pre-gallery" id="pre-gallery">
+                <!-- Selectable thumbnails injected via JS -->
+            </div>
+
+            <div class="preprocessing-container">
+                <div class="image-preview">
+                    <div class="img-wrapper">
+                        <img id="preprocess-img" src="https://raw.githubusercontent.com/SartajBhuvaji/Brain-Tumor-Classification-DataSet/master/Training/pituitary_tumor/p%20(10).jpg" alt="MRI to preprocess">
+                    </div>
+                </div>
+                <div class="controls">
+                    <label>Image Size (Resize) <span id="val-resize">250px</span>
+                        <input type="range" id="slider-resize" min="64" max="300" value="250">
+                    </label>
+                    <label>Brightness <span id="val-brightness">100%</span>
+                        <input type="range" id="slider-brightness" min="50" max="150" value="100">
+                    </label>
+                    <label>Contrast <span id="val-contrast">100%</span>
+                        <input type="range" id="slider-contrast" min="50" max="200" value="100">
+                    </label>
+                    <button id="btn-normalize">Normalize [0, 1]</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Data Generator -->
+        <section class="step-card" id="step-4">
+            <h2>4. Data Generator</h2>
+            <p>Batches of MRI images (e.g., 20 per batch) are generated and fed into the model pipeline.</p>
+            <button id="btn-generate-batch">Generate Training Batch</button>
+            <div class="pipeline-container">
+                <div class="batch-container" id="batch-container">
+                    <!-- Animated images will appear here -->
+                </div>
+                <div class="model-entrance" id="model-entrance">
+                    Model Pipeline
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Real-Time VGG16 Processing Visualization -->
+        <section class="step-card" id="step-5">
+            <h2>5. Real-Time VGG16 Processing Visualization</h2>
+            <p>Upload an MRI brain image to see exactly how the VGG16 model processes it mathematically, layer by layer.</p>
+            
+            <div class="vgg-interactive-container">
+                <div class="vgg-upload-section">
+                    <input type="file" id="vgg-upload" accept="image/*">
+                    <label for="vgg-upload" class="upload-label vgg-label">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Select MRI Image to Process...
+                    </label>
+                </div>
+
+                <div class="vgg-flow-diagram" id="vgg-flow-diagram" style="display: none;">
+                    <div class="flow-node active" data-step="1">1. Input Image</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="2">2. Convolution Layer</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="3">3. ReLU Activation</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="4">4. Max Pooling</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="5">5. Deep Features</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="6">6. Flatten Layer</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="7">7. Fully Connected</div><div class="flow-arrow">→</div>
+                    <div class="flow-node" data-step="8" style="border-color: var(--success); color: var(--success);">8. Final Prediction</div>
+                </div>
+
+                <div class="vgg-viz-panel" id="vgg-viz-panel" style="display: none;">
+                    <div class="vgg-viz-info">
+                        <h3 id="vgg-step-title">Step 1: Input Image</h3>
+                        <p id="vgg-step-desc">Displaying the raw uploaded MRI brain image before any network processing.</p>
+                    </div>
+                    
+                    <div class="vgg-viz-display" id="vgg-viz-display">
+                        <canvas id="vgg-canvas" width="250" height="250"></canvas>
+                        <div id="vgg-extra-viz"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Model Training -->
+        <section class="step-card" id="step-6">
+            <h2>6. Model Training Visualization</h2>
+            <p>Improvement of Model Accuracy and Reduction in Loss over 5 Epochs.</p>
+            <div class="chart-container-single">
+                <canvas id="trainingChart"></canvas>
+            </div>
+        </section>
+
+        <!-- 7. Classification Report -->
+        <section class="step-card" id="step-7">
+            <h2>7. Testing Classification Report</h2>
+            <p>Class Index Mapping: 0 - Glioma | 1 - Meningioma | 2 - No Tumor | 3 - Pituitary</p>
+            <div class="table-responsive">
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>Support</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0 (Glioma)</td><td>0.95</td><td>0.96</td><td>0.95</td><td>300</td></tr>
+                        <tr><td>1 (Meningioma)</td><td>0.95</td><td>0.91</td><td>0.93</td><td>306</td></tr>
+                        <tr><td>2 (No Tumor)</td><td>0.98</td><td>1.00</td><td>0.99</td><td>405</td></tr>
+                        <tr><td>3 (Pituitary)</td><td>0.98</td><td>0.99</td><td>0.98</td><td>300</td></tr>
+                        <tr style="background: rgba(255,255,255,0.05); font-weight: bold;">
+                            <td>Accuracy</td><td></td><td></td><td>0.97</td><td>1311</td>
+                        </tr>
+                        <tr style="background: rgba(255,255,255,0.05); font-weight: bold;">
+                            <td>Macro Avg</td><td>0.96</td><td>0.96</td><td>0.96</td><td>1311</td>
+                        </tr>
+                        <tr style="background: rgba(255,255,255,0.05); font-weight: bold;">
+                            <td>Weighted Avg</td><td>0.97</td><td>0.97</td><td>0.97</td><td>1311</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 8. Confusion Matrix -->
+        <section class="step-card" id="step-8">
+            <h2>8. Testing Confusion Matrix</h2>
+            <p>Predicted vs True Classes.</p>
+            <div class="heatmap-wrapper">
+                <div class="heatmap-container" id="heatmap">
+                    <!-- Javascript generated heatmap -->
+                </div>
+                <div class="axis-labels">
+                    <span class="y-axis">True Classes</span>
+                    <span class="x-axis">Predicted Classes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. ROC Curve -->
+        <section class="step-card" id="step-9">
+            <h2>9. Testing ROC Curve Visualization</h2>
+            <p>ROC Curves for the four classes with respective AUC values.</p>
+            <div class="chart-container-single">
+                <canvas id="rocChart"></canvas>
+            </div>
+        </section>
+
+        <section class="step-card" id="step-10">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;">
+                <h2 style="margin: 0;">10. Brain Tumor Prediction</h2>
+                <div id="backend-status" class="status-badge offline">
+                    <span>Checking...</span>
+                </div>
+            </div>
+            <p>Upload an MRI brain image — the trained VGG16 model will analyze it in real-time using your <code>model.h5</code>.</p>
+            <div class="testing-container" id="prediction-container">
+                <div class="upload-area" id="prediction-upload-area">
+                    <input type="file" id="upload-mri" accept="image/*">
+                    <label for="upload-mri" class="upload-label" id="prediction-upload-label">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span style="font-size: 1.1rem;">Upload MRI Scan for AI Analysis</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Supports JPG, PNG — Drag &amp; drop or click</span>
+                    </label>
+                </div>
+                <div class="test-results" id="prediction-results" style="display: none;">
+                    <div class="pred-image-wrap">
+                        <img id="test-preview" src="" alt="Uploaded MRI">
+                        <div class="pred-image-label">Uploaded MRI</div>
+                    </div>
+                    <div id="test-prediction" class="prediction-box-v2">
+                        <!-- Filled dynamically by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Brain Tumor Detection Interactive Dashboard</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
