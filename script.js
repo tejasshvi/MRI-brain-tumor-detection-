@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Health Check ─────────────────────────────────────────────────
     async function checkBackendHealth() {
         try {
-            const res = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(3000) });
+            const res = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(10000) });
             const data = await res.json();
             if (data.status === 'online' && data.model_loaded) {
                 backendStatus.className = 'status-badge online';
