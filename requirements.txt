@@ -1,7 +1,7 @@
 Flask
 Flask-Cors
 keras
-tensorflow-cpu
+tensorflow
 Pillow
 numpy
 gunicorn
