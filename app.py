@@ -29,6 +29,13 @@ CLASS_LABELS = {
 
 
 # -- Load Model Once at Startup --
+import gdown
+if not os.path.exists(MODEL_PATH):
+    print("[INFO] Downloading model from Google Drive...")
+    file_id = '1hAVC43mf8j_5d6huS_IafujL17H2mXcK'
+    url = f'https://drive.google.com/uc?id={file_id}'
+    gdown.download(url, MODEL_PATH, quiet=False)
+
 print(f"[INFO] Loading model from: {MODEL_PATH}")
 try:
     model = keras.models.load_model(
