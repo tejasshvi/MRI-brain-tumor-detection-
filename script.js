@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 10. Brain Tumor Prediction (Real Model Inference via Flask)
-    const BACKEND_URL = 'http://localhost:5000';
+    const BACKEND_URL = 'https://mri-brain-tumor-detection-1-2j2u.onrender.com';
     const uploadInput = document.getElementById('upload-mri');
     const testPreview = document.getElementById('test-preview');
     const testPrediction = document.getElementById('test-prediction');
