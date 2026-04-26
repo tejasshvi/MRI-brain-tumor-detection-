@@ -425,7 +425,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 10. Brain Tumor Prediction (Real Model Inference via Flask)
-    const BACKEND_URL = 'https://mri-brain-tumor-detection-1-2j2u.onrender.com';
+    // 10. Brain Tumor Prediction (Real Model Inference via Flask)
+    const BACKEND_URL = 'https://tejsahvikumar-mri-tumor-ap.hf.space';
     const uploadInput = document.getElementById('upload-mri');
     const testPreview = document.getElementById('test-preview');
     const testPrediction = document.getElementById('test-prediction');
@@ -435,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Health Check ─────────────────────────────────────────────────
     async function checkBackendHealth() {
         try {
-            const res = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(10000) });
+            const res = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(3000) });
             const data = await res.json();
             if (data.status === 'online' && data.model_loaded) {
                 backendStatus.className = 'status-badge online';
