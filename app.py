@@ -78,7 +78,7 @@ def predict():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "online", "model_ready": model is not None})
+    return jsonify({"status": "online", "model_loaded": model is not None})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
